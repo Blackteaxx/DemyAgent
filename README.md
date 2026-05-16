@@ -6,7 +6,7 @@
 
 
 
-### RLAnything & DemyAgent: Open-Source RL for LLMs and Agentic Scenarios
+### RLAnything (ICML 2026) & DemyAgent: Open-Source RL for LLMs and Agentic Scenarios
 
 
 
@@ -122,6 +122,8 @@ We also contribute [high-quality SFT and RL datasets](https://huggingface.co/col
 
 
 ## 🚩 New Updates
+
+- **[2026.5]** 🎉 **RLAnything is accepted by ICML 2026!** Check out our [paper](https://arxiv.org/abs/2602.02488), [models](https://huggingface.co/collections/Gen-Verse/open-agentrl), and [blog](https://yinjjiew.github.io/projects/rlanything/).
 
 - **[2026.2]** 🦞 We release [**OpenClaw-RL**](https://github.com/Gen-Verse/OpenClaw-RL), a new fully asynchronous RL framework built on top of Open-AgentRL, targeting **personalized agentic AI** trained from live conversation feedback. OpenClaw-RL introduces:
   - **Binary RL (GRPO):** PRM-based scalar reward from next-state feedback for policy optimization
@@ -462,89 +464,3 @@ We further scale the optimization for GUI agent and achieves SoTA results:
 ## 🙏 Acknowledgements
 
 This work aims to explore more efficient paradigms for Agentic RL. Our implementation builds upon the excellent codebases of [VeRL](https://github.com/volcengine/verl) and [ReTool](https://github.com/ReTool-RL/ReTool). We sincerely thank these projects for their valuable insights and high-quality implementations, which have greatly facilitated our research.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
