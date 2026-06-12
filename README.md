@@ -6,7 +6,7 @@
 
 
 
-### RLAnything & AutoTool (ICML 2026), DemyAgent: Open-Source RL for LLMs and Agentic Scenarios
+### RLAnything (ICML 2026) & AutoTool (ICML 2026), DemyAgent: Open-Source RL for LLMs and Agentic Scenarios
 
 
 
