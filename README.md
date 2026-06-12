@@ -6,7 +6,7 @@
 
 
 
-### RLAnything (ICML 2026) & DemyAgent: Open-Source RL for LLMs and Agentic Scenarios
+### RLAnything & AutoTool (ICML 2026), DemyAgent: Open-Source RL for LLMs and Agentic Scenarios
 
 
 
@@ -114,14 +114,76 @@ We also contribute [high-quality SFT and RL datasets](https://huggingface.co/col
 
 </details>
 
-| | **RLAnything** | **DemyAgent** |
-|---|---|---|
-| **Focus** | Closed-loop RL optimization | Agentic reasoning |
-| **Core Idea** | Joint optimization of policy, reward model & environment | Real trajectories + exploration-friendly techniques + deliberative reasoning |
-| **Release** | LLM/GUI/Coding Policy & Reward Model | 3K SFT + 30K RL Data, SOTA-level DemyAgent-4B |
+
+
+
+
+
+
+
+
+
+
+<details>
+  <summary>
+    <b>AutoTool</b>
+    <a href="https://arxiv.org/abs/2512.13278">
+      <img
+        src="https://img.shields.io/badge/Paper-Arxiv%202512.13278-red?logo=arxiv&logoColor=red"
+        alt="Paper"
+        height="18"
+        style="vertical-align: middle;"
+      />
+    </a>
+    <a href="autotool/">
+      <img
+        src="https://img.shields.io/badge/Code-AutoTool-181717?logo=github&logoColor=white"
+        alt="Code"
+        height="18"
+        style="vertical-align: middle;"
+      />
+    </a>
+    <a href="https://icml.cc/">
+      <img
+        src="https://img.shields.io/badge/ICML-2026-blue"
+        alt="ICML 2026"
+        height="18"
+        style="vertical-align: middle;"
+      />
+    </a>
+    <b>(click to expand)</b>
+  </summary>
+
+<div>
+<h3>AutoTool: Dynamic Tool Selection and Integration for Agentic Reasoning</h3></div>
+
+
+
+
+    
+<table class="center">     <tr>     <td width=100% style="border: none"><img src="autotool/assets/intro_illus.png" style="width:100%"></td>     </tr>     <tr>     <td width="100%" style="border: none; text-align: center; word-wrap: break-word">An overview of our research on AutoTool. </td>   </tr> </table>
+
+In this work, we move beyond the fixed-toolset assumption in agentic RL and train LLM agents with **dynamic tool-selection** capabilities over large, evolving toolsets:
+* We construct a **200K tool-use trajectory dataset** with explicit tool-selection rationales, covering **1,346 tools and 120 task types** across math, science, search QA, code generation, and multimodal reasoning;
+* AutoTool employs a **dual-phase optimization pipeline**: Phase I stabilizes tool-integrated reasoning trajectories with SFT and RL, and Phase II refines multi-step tool selection with a **KL-regularized Plackett–Luce ranking** objective;
+* Trained on only 460 seen tools, AutoTool **generalizes to a full 1,346-tool library (including 886 unseen tools)** at inference time, and consistently outperforms advanced LLM agents and tool-integration methods across ten benchmarks, with average gains of **+6.4%** (math & science), **+4.5%** (search QA), **+7.7%** (code), and **+6.9%** (multimodal).
+
+See [`autotool/`](autotool/) for the full training framework and instructions.
+
+</details>
+
+| | **RLAnything** | **DemyAgent** | **AutoTool** |
+|---|---|---|---|
+| **Focus** | Closed-loop RL optimization | Agentic reasoning | Dynamic tool selection |
+| **Core Idea** | Joint optimization of policy, reward model & environment | Real trajectories + exploration-friendly techniques + deliberative reasoning | Tool-selection rationales + PL-ranking refinement over evolving toolsets |
+| **Release** | LLM/GUI/Coding Policy & Reward Model | 3K SFT + 30K RL Data, SOTA-level DemyAgent-4B | Dual-phase training code, 200K tool-use data (coming soon) |
 
 
 ## 🚩 New Updates
+
+- **[2026.5]** 🎉 **AutoTool is accepted by ICML 2026!** We open-source our work [**AutoTool**](https://arxiv.org/abs/2512.13278) under [`autotool/`](autotool/), including:
+  - Dual-phase training code: Phase-I trajectory stabilization (SFT + RL) and Phase-II tool-selection refinement with KL-regularized Plackett–Luce ranking
+  - Example data format of our 200K tool-selection trajectory dataset (1,346 tools, 120 task types) — full training data and toolset release coming soon
 
 - **[2026.5]** 🎉 **RLAnything is accepted by ICML 2026!** Check out our [paper](https://arxiv.org/abs/2602.02488), [models](https://huggingface.co/collections/Gen-Verse/open-agentrl), and [blog](https://yinjjiew.github.io/projects/rlanything/).
 
@@ -153,7 +215,7 @@ We also contribute [high-quality SFT and RL datasets](https://huggingface.co/col
   - [Get Started](#demyagent-get-started)
   - [Training](#demyagent-train)
     - [Cold-Start SFT](#demyagent-cold-sft) 
-    - [Agentic RL](#"demyagent-agent-rl") 
+    - [Agentic RL](#demyagent-agent-rl) 
   - [Evaluation](#demyagent-eval)
   - [Results](#demyagent-result)
 
@@ -165,6 +227,8 @@ We also contribute [high-quality SFT and RL datasets](https://huggingface.co/col
     - [RLVR Coding](#rlanything-coding) 
   - [Evaluation](#rlanything-eval)
   - [Results](#rlanything-result)
+
+- **AutoTool**: see [`autotool/README.md`](autotool/README.md) for installation, training (Phase I & II), and results
 
 ## 🚀 Get Started
 
@@ -456,7 +520,14 @@ We further scale the optimization for GUI agent and achieves SoTA results:
 @article{wang2026rlanything,
   title={RLAnything: Forge Environment, Policy, and Reward Model in Completely Dynamic RL System},
   author={Wang, Yinjie and Xie, Tianbao and Shen, Ke and Wang, Mengdi and Yang, Ling},
-  journal={arXiv preprint arXiv:2602.02488},
+  journal={Forty-third International Conference on Machine Learning},
+  year={2026}
+}
+
+@inproceedings{zou2026autotool,
+  title={AutoTool: Dynamic Tool Selection and Integration for Agentic Reasoning},
+  author={Jiaru Zou and Ling Yang and Yunzhe Qi and Sirui Chen and Mengting Ai and Ke Shen and Jingrui He and Mengdi Wang},
+  booktitle={Forty-third International Conference on Machine Learning},
   year={2026}
 }
 ```
