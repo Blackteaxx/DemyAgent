@@ -2,11 +2,13 @@ set -x
 
 export VLLM_USE_V1=1
 # ================= data/model/tool =================
-open_agent_rl=/path/to/your/dataset/Gen-Verse/Open-AgentRL-30K/Open-AgentRL-30K.parquet
-gpqa_diamond=/path/to/your/dataset/Gen-Verse/Open-AgentRL-Eval/gpqa-diamond/gpqa_diamond.parquet
-aime_2024=/path/to/your/dataset/Gen-Verse/Open-AgentRL-Eval/aime2024/aime_2024_problems.parquet
-aime_2025=/path/to/your/dataset/Gen-Verse/Open-AgentRL-Eval/aime2025/aime_2025_problems.parquet
-model_path=/path/to/your/models/Gen-Verse/DemyAgent-4B
+
+open_agent_rl=/workspace/DemyAgent/data/Open-AgentRL-30K/Open-AgentRL-30K.parquet
+gpqa_diamond=/workspace/DemyAgent/data/eval/gpqa-diamond/gpqa_diamond.parquet
+aime_2024=/workspace/DemyAgent/data/eval/aime2024/aime_2024_problems.parquet
+aime_2025=/workspace/DemyAgent/data/eval/aime2025/aime_2025_problems.parquet
+
+model_path=/workspace/DemyAgent/models/Gen-Verse/DemyAgent-4B
 
 train_files="['$open_agent_rl']"
 test_files="['$gpqa_diamond','$aime_2024','$aime_2025']"
@@ -16,7 +18,7 @@ tool_config_path=recipe/demystify/sandbox_fusion_tool_config.yaml
 
 # wandb
 project_name=demystify-agentic-rl
-experiment_name=grpo-tcr-qwen3-4b-aime-gpqa
+experiment_name=grpo-tcr-qwen3-4b-eval-aime-gpqa
 default_local_dir=/data_storage/yzc/models/checkpoint/$experiment_name
 
 # ================= algorithm =================
@@ -135,7 +137,7 @@ python3 -m verl.trainer.main_ppo \
     trainer.logger=['console','wandb'] \
     trainer.project_name=$project_name \
     trainer.experiment_name=$experiment_name \
-    trainer.n_gpus_per_node=8 \
+    trainer.n_gpus_per_node=4 \
     trainer.val_before_train=True \
     trainer.validation_data_dir=${VAL_SAVE_PATH} \
     trainer.log_val_generations=20 \

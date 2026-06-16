@@ -93,6 +93,11 @@ class DAPORewardManager(AbstractRewardManager):
             data_source = data_item.non_tensor_batch[self.reward_fn_key]
 
             extra_info = data_item.non_tensor_batch.get("extra_info", None)
+            # inject rollout turn count so compute_score's tool-call reward (TCR) works.
+            # only naive manager did this upstream; dapo dropped it -> num_turns was always 0.
+            extra_info = dict(extra_info) if extra_info is not None else {}
+            if "__num_turns__" in data_item.non_tensor_batch:
+                extra_info["num_turns"] = data_item.non_tensor_batch["__num_turns__"]
 
             result = self.compute_score(
                 data_source=data_source,

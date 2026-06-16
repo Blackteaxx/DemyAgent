@@ -2,10 +2,11 @@ set -x
 
 export VLLM_USE_V1=1
 # ================= data/model/tool =================
-open_agent_rl=/path/to/your/dataset/Gen-Verse/Open-AgentRL-30K/Open-AgentRL-30K.parquet
-aime_2024=/path/to/your/dataset/Gen-Verse/Open-AgentRL-Eval/aime2024/aime_2024_problems.parquet
-aime_2025=/path/to/your/dataset/Gen-Verse/Open-AgentRL-Eval/aime2025/aime_2025_problems.parquet
-model_path=/path/to/your/model/Gen-Verse/Qwen3-4B-RA-SFT
+DATA_ROOT=/workspace/DemyAgent/data
+open_agent_rl=$DATA_ROOT/Open-AgentRL-30K/Open-AgentRL-30K.parquet
+aime_2024=$DATA_ROOT/eval/aime2024/aime_2024_problems.parquet
+aime_2025=$DATA_ROOT/eval/aime2025/aime_2025_problems.parquet
+model_path=/workspace/DemyAgent/model/Qwen3-4B-RA-SFT
 
 train_files="['$open_agent_rl']"
 test_files="['$aime_2025', '$aime_2024']"
@@ -15,8 +16,11 @@ tool_config_path=recipe/demystify/sandbox_fusion_tool_config.yaml
 
 # wandb
 project_name=demystify-agentic-rl
-experiment_name=GRPO-TCR-Qwen3-4B
-default_local_dir=/data_storage/yzc/models/checkpoint/$experiment_name
+experiment_name=GRPO-TCR-Qwen3-4B-infertp1
+default_local_dir=/workspace/DemyAgent/checkpoint/$experiment_name
+
+# gpus
+N_GPUS=4
 
 # ================= algorithm =================
 adv_estimator=grpo
@@ -34,12 +38,13 @@ clip_ratio_high=0.28
 # loss agg ✓
 loss_agg_mode="token-mean"
 
-# Dymaic Sampleing, we do not utilize dynamic sampling here since it is too expensive for agentic rl x
+# Dymaic Sampling, we do not utilize dynamic sampling here since it is too expensive for agentic rl x
+# 这里虽然写了，但是最后没传参
 enable_filter_groups=True
 filter_groups_metric=acc
 max_num_gen_batches=10
 
-#Overlong Reward Shaping ✓
+# Overlong Reward Shaping ✓
 reward_manager=dapo
 enable_overlong_buffer=True
 overlong_buffer_len=$((1024 * 4))
@@ -48,21 +53,21 @@ overlong_penalty_factor=1.0
 
 max_turns=16
 max_prompt_length=2560
-max_response_length=20480
+max_response_length=16384
 actor_lr=1e-6
 
 train_batch_size=64
 ppo_mini_batch_size=16
-n_resp_per_prompt=16
-n_resp_per_prompt_val=32
+n_resp_per_prompt=8
+n_resp_per_prompt_val=8
 
 # ================= perfomance =================
-infer_tp=4 # vllm
+infer_tp=1 # vllm
 train_sp=4 # train
 offload=True
 
 actor_max_token_len_per_gpu=$(( (max_prompt_length + max_response_length) * 1 ))
-log_prob_max_token_len_per_gpu=$(( actor_max_token_len_per_gpu * 4 ))
+log_prob_max_token_len_per_gpu=$(( actor_max_token_len_per_gpu * 2 ))
 
 # ================= save rollouts =================
 ROLLOUT_SAVE_PATH="${default_local_dir}/rollout"
@@ -121,7 +126,7 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.rollout.multi_turn.max_assistant_turns=$max_turns \
     actor_rollout_ref.rollout.multi_turn.tool_config_path=$tool_config_path \
     actor_rollout_ref.rollout.multi_turn.format=hermes \
-    actor_rollout_ref.rollout.gpu_memory_utilization=0.75 \
+    actor_rollout_ref.rollout.gpu_memory_utilization=0.55 \
     actor_rollout_ref.rollout.n=$n_resp_per_prompt \
     actor_rollout_ref.rollout.val_kwargs.top_p=0.6 \
     actor_rollout_ref.rollout.val_kwargs.temperature=1.0 \
@@ -132,14 +137,14 @@ python3 -m verl.trainer.main_ppo \
     +reward_model.reward_kwargs.overlong_buffer_cfg.penalty_factor=${overlong_penalty_factor} \
     +reward_model.reward_kwargs.overlong_buffer_cfg.log=false \
     +reward_model.reward_kwargs.max_resp_len=${max_response_length} \
-    trainer.logger=['console','wandb'] \
+    trainer.logger=['console','swanlab'] \
     trainer.project_name=$project_name \
     trainer.experiment_name=$experiment_name \
-    trainer.n_gpus_per_node=8 \
+    trainer.n_gpus_per_node=$N_GPUS \
     trainer.val_before_train=True \
     trainer.log_val_generations=20 \
     trainer.nnodes=1 \
     trainer.save_freq=30 \
     trainer.default_local_dir=$default_local_dir \
-    trainer.test_freq=10 \
-    trainer.total_epochs=3 $@
+    trainer.test_freq=20 \
+    trainer.total_epochs=1 $@

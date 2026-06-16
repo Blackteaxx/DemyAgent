@@ -1,0 +1,34 @@
+# ===== 大文件 / 训练产物：绝不提交 =====
+/checkpoint/
+/model/
+/data/
+/swanlog/
+/outputs/
+/eval/
+
+# ===== wheels / 构建产物 =====
+*.whl
+*.egg-info/
+build/
+dist/
+
+# ===== Python 字节码 =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ===== 密钥 / 凭证 =====
+.swanlab/
+.netrc
+*.netrc
+.env
+*.env
+wandb/
+*.key
+*.pem
+
+# ===== 杂项 =====
+.DS_Store
+*.log
+.ipynb_checkpoints/
