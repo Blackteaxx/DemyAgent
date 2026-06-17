@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
+import os
 import re
 from typing import Any
 import ast
@@ -162,6 +163,31 @@ class CustomRLHFDataset(RLHFDataset):
         return row
 
 
+# --- TCR (tool-call reward) ablation switch ---------------------------------
+# Selected by env var TCR_MODE (set it in the train script before launching):
+#   "tcr"      -> use the real rollout num_turns injected by the dapo reward
+#                 manager (current / fixed behaviour; wrong answers graded in
+#                 [-1.0, -0.6] by how many tool-call turns were taken).
+#   "original" -> reproduce the pre-fix upstream behaviour: num_turns is treated
+#                 as 0, so every wrong answer is pinned at -1.1 (TCR a no-op).
+#   "outcome"  -> disable the TCR term entirely (=0); wrong answers stay at -1.0.
+TCR_MODE = os.environ.get("TCR_MODE", "tcr").lower()
+_tcr_mode_logged = False
+
+
+def _tool_call_reward(extra_info):
+    # log the active mode once so an ablation run can't silently no-op
+    global _tcr_mode_logged
+    if not _tcr_mode_logged:
+        logger.info(f"[TCR] reward ablation mode = {TCR_MODE!r}")
+        print(f"[TCR] reward ablation mode = {TCR_MODE!r}", flush=True)
+        _tcr_mode_logged = True
+    if TCR_MODE == "outcome":
+        return 0.0
+    num_turns = 0 if TCR_MODE == "original" else int(extra_info.get("num_turns", 0))
+    return (num_turns - 2) / 2 * 0.1
+
+
 def compute_score(data_source, solution_str, ground_truth, extra_info):
     # use \\boxed{...} answer
     ds = (data_source or "").lower()
@@ -169,10 +195,8 @@ def compute_score(data_source, solution_str, ground_truth, extra_info):
         result = code_math.compute_score(solution_str, ground_truth)
     else:
         result = math_dapo.compute_score(solution_str=solution_str,ground_truth=ground_truth,strict_box_verify=True)
-    num_turns = int(extra_info.get("num_turns",0))
     if result["score"] < 0:
-        tool_call_reward = (num_turns - 2) / 2 * 0.1
-        result["score"] = float(min(-0.6, result["score"] + tool_call_reward))
+        result["score"] = float(min(-0.6, result["score"] + _tool_call_reward(extra_info)))
     if result["pred"] is None:
         result["pred"] = ""
     return result

@@ -16,7 +16,11 @@ tool_config_path=recipe/demystify/sandbox_fusion_tool_config.yaml
 
 # wandb
 project_name=demystify-agentic-rl
-experiment_name=GRPO-TCR-Qwen3-4B-infertp1
+# TCR reward ablation switch: tcr (default/fixed) | original (pre-fix, wrong=-1.1) | outcome (no TCR, wrong=-1.0)
+TCR_MODE=${TCR_MODE:-tcr}
+export TCR_MODE
+[ "$TCR_MODE" = "tcr" ] && _tcr_suffix="" || _tcr_suffix="-$TCR_MODE"
+experiment_name=GRPO-TCR-Qwen3-4B-infertp1${_tcr_suffix}
 default_local_dir=/workspace/DemyAgent/checkpoint/$experiment_name
 
 # gpus
