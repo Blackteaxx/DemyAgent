@@ -166,7 +166,7 @@ run_eval() {
         +reward_model.reward_kwargs.overlong_buffer_cfg.penalty_factor=${overlong_penalty_factor} \
         +reward_model.reward_kwargs.overlong_buffer_cfg.log=false \
         +reward_model.reward_kwargs.max_resp_len=${max_response_length} \
-        trainer.logger=['console','wandb'] \
+        trainer.logger=['console','swanlab'] \
         trainer.project_name=$project_name \
         trainer.experiment_name=$exp_name \
         trainer.n_gpus_per_node=$N_GPUS \
@@ -176,7 +176,7 @@ run_eval() {
         trainer.nnodes=1 \
         trainer.save_freq=-1 \
         trainer.default_local_dir=$default_local_dir \
-        trainer.total_training_steps=1 \
+        trainer.val_only=True \
         trainer.test_freq=10 \
         trainer.total_epochs=1
 }
