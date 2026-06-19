@@ -94,6 +94,8 @@ def get_device_flops(unit="T"):
         flops = 354e12
     elif "Ascend910" in device_name:
         flops = 354e12
+    elif "RTX 4090" in device_name:
+        flops = 165e12
     elif "RTX 3070 Ti" in device_name:
         flops = 21.75e12
     flops_unit = unit_convert(flops, unit)
